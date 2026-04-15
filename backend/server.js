@@ -16,6 +16,8 @@ app.use("/api/auth", require("./routes/authRoutes"));
 
 app.use("/api/events", require("./routes/eventRoutes"));
 
+app.use("/api/ai", require("./routes/aiRoutes"));
+
 app.listen(process.env.PORT, () => {
   console.log("Server running...");
 });
