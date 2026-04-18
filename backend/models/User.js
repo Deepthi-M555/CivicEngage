@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
   skills: [{ type: String }],
   interests: [{ type: String }],
 
+  emailPreferences: { type: Boolean, default: true },
+  privacyMode: { type: String, enum: ['public', 'private'], default: 'public' },
+  badges: [{ name: String, awardedAt: Date }],
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
