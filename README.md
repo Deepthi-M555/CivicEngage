@@ -270,6 +270,38 @@ GET /api/events/search?location=&skill=
 * QR-based check-in system
 
 ---
+---
+
+## 🤖 AI Recommendation API
+
+This module recommends suitable volunteer activities based on user interests, especially useful during disaster situations.
+
+---
+
+### 🔹 Get Activity Recommendations
+
+**POST** `/api/ai/recommend`
+
+---
+
+### 📥 Request Body
+
+```json
+{
+  "interest": "disaster"
+}
+```
+### 📤 Response
+```json
+[
+  "Flood relief food distribution",
+  "Rescue support for flood victims",
+  "Relief material packing"
+]
+```
+### 🔗 System Flow
+
+Client → Node.js Backend → Flask AI Service → Response
 
 ## 👨‍💻 Author
 
