@@ -306,3 +306,56 @@ Client → Node.js Backend → Flask AI Service → Response
 ## 👨‍💻 Author
 
 Deepthi & Team 🚀
+
+
+---
+
+## 👨‍💻 Backend Contribution – Shashank Srinivas
+
+This section outlines my contribution to the backend development of the CivicEngage platform.
+
+### 🔧 Modules Implemented
+
+#### 📌 Notification System
+- Developed APIs to create, fetch, and update notifications
+- Implemented read/unread status functionality
+
+#### 💬 Messaging System
+- Built APIs for sending and retrieving messages between users
+
+#### 🖼️ Image Handling
+- Implemented image upload and backend media handling
+
+#### 🤖 AI Recommendation Integration
+- Integrated AI-based volunteer recommendation module with backend services
+
+---
+
+### 📡 API Endpoints
+
+**Notifications**
+- GET /notifications  
+- POST /notifications  
+- PUT /notifications/read  
+
+**Messages**
+- POST /messages  
+- GET /messages  
+
+**Images**
+- POST /upload  
+
+---
+
+### ⚙️ Technologies Used
+- Node.js  
+- Express.js  
+- MongoDB  
+
+---
+
+### ✅ Key Highlights
+- Designed modular backend architecture  
+- Followed clean API structuring  
+- Ensured scalability and maintainability
+### 👥 Team Contributions
