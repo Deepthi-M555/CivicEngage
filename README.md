@@ -12,6 +12,71 @@ This repository contains the robust, secure, and scalable RESTful API backend en
 *   **ODM:** Mongoose[cite: 1]
 *   **Security & Encryption:** JSON Web Tokens (JWT), bcrypt[cite: 1]
 *   **Testing Suite:** Postman[cite: 1]
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repo-link>
+cd CivicEngage
+```
+
+### 2. Backend Setup
+Navigate to the backend folder and install dependencies:
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file inside the `backend` folder:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection
+JWT_SECRET=your_secret_key
+```
+
+Run the backend server:
+```bash
+npm run dev
+```
+
+### 3. Frontend (Landing Page) Setup
+Open a new terminal, navigate to the frontend folder, and install dependencies:
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file inside the `frontend` folder:
+```env
+VITE_USER_DASHBOARD_URL="http://localhost:5174/login"
+VITE_NGO_DASHBOARD_URL="http://localhost:5175/login"
+VITE_GOVERNMENT_DASHBOARD_URL="http://localhost:5176/login"
+VITE_ADMIN_DASHBOARD_URL="http://localhost:5177/login"
+```
+
+Run the frontend development server:
+```bash
+npm run dev
+```
+
+### 4. User Dashboard Setup
+Open a new terminal, navigate to the user-dashboard folder, and install dependencies:
+```bash
+cd user-dashboard
+npm install
+```
+
+Create a `.env` file inside the `user-dashboard` folder:
+```env
+VITE_API_URL="http://localhost:5000/api"
+VITE_FRONTEND_URL="http://localhost:5173"
+```
+
+Run the user dashboard development server:
+```bash
+npm run dev
+```
 
 ---
 
