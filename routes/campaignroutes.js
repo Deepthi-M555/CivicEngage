@@ -1,29 +1,35 @@
 const express = require("express");
 const router = express.Router();
 
+const protect = require("../middleware/authMiddleware");
+
 const {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
   updateCampaign,
-  deleteCampaign,
+  deleteCampaign
 } = require("../controllers/campaignController");
 
-const authMiddleware = require("../middleware/authMiddleware");
 
-// Create Campaign
-router.post("/create", authMiddleware, createCampaign);
+// Get all campaigns
+router.get("/", protect, getAllCampaigns);
 
-// Get All Campaigns
-router.get("/", authMiddleware, getAllCampaigns);
 
-// Get Single Campaign
-router.get("/:id", authMiddleware, getCampaignById);
+// Get single campaign
+router.get("/:id", protect, getCampaignById);
 
-// Update Campaign
-router.put("/:id", authMiddleware, updateCampaign);
 
-// Delete Campaign
-router.delete("/:id", authMiddleware, deleteCampaign);
+// Create campaign
+router.post("/", protect, createCampaign);
+
+
+// Update campaign
+router.put("/:id", protect, updateCampaign);
+
+
+// Delete campaign
+router.delete("/:id", protect, deleteCampaign);
+
 
 module.exports = router;

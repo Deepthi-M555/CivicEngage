@@ -1,11 +1,13 @@
 const Campaign = require("../models/Campaign");
 
+
 // Create Campaign
 const createCampaign = async (req, res) => {
   try {
+
     const campaign = await Campaign.create({
       ...req.body,
-      ngoId: req.ngo.id,
+      ngoId: req.user._id,
     });
 
     res.status(201).json({
@@ -13,6 +15,7 @@ const createCampaign = async (req, res) => {
       message: "Campaign created successfully",
       campaign,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -21,15 +24,20 @@ const createCampaign = async (req, res) => {
   }
 };
 
+
 // Get All Campaigns
 const getAllCampaigns = async (req, res) => {
   try {
-    const campaigns = await Campaign.find({ ngoId: req.ngo.id });
+
+    const campaigns = await Campaign.find({
+      ngoId: req.user._id,
+    });
 
     res.status(200).json({
       success: true,
       campaigns,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -38,12 +46,14 @@ const getAllCampaigns = async (req, res) => {
   }
 };
 
+
 // Get Single Campaign
 const getCampaignById = async (req, res) => {
   try {
+
     const campaign = await Campaign.findOne({
       _id: req.params.id,
-      ngoId: req.ngo.id,
+      ngoId: req.user._id,
     });
 
     if (!campaign) {
@@ -57,6 +67,7 @@ const getCampaignById = async (req, res) => {
       success: true,
       campaign,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -65,13 +76,16 @@ const getCampaignById = async (req, res) => {
   }
 };
 
+
 // Update Campaign
 const updateCampaign = async (req, res) => {
   try {
+
     const campaign = await Campaign.findOne({
       _id: req.params.id,
-      ngoId: req.ngo.id,
+      ngoId: req.user._id,
     });
+
 
     if (!campaign) {
       return res.status(404).json({
@@ -79,6 +93,7 @@ const updateCampaign = async (req, res) => {
         message: "Campaign not found",
       });
     }
+
 
     const updatedCampaign = await Campaign.findByIdAndUpdate(
       req.params.id,
@@ -89,11 +104,14 @@ const updateCampaign = async (req, res) => {
       }
     );
 
+
     res.status(200).json({
       success: true,
       message: "Campaign updated successfully",
       campaign: updatedCampaign,
     });
+
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -102,13 +120,17 @@ const updateCampaign = async (req, res) => {
   }
 };
 
+
+
 // Delete Campaign
 const deleteCampaign = async (req, res) => {
   try {
+
     const campaign = await Campaign.findOne({
       _id: req.params.id,
-      ngoId: req.ngo.id,
+      ngoId: req.user._id,
     });
+
 
     if (!campaign) {
       return res.status(404).json({
@@ -117,12 +139,16 @@ const deleteCampaign = async (req, res) => {
       });
     }
 
+
     await Campaign.findByIdAndDelete(req.params.id);
+
 
     res.status(200).json({
       success: true,
       message: "Campaign deleted successfully",
     });
+
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -130,6 +156,8 @@ const deleteCampaign = async (req, res) => {
     });
   }
 };
+
+
 
 module.exports = {
   createCampaign,

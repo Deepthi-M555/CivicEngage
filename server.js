@@ -4,10 +4,6 @@ const cors = require("cors");
 
 const connectDB = require("./config/db");
 
-// Routes
-const ngoroutes = require("./routes/ngoroutes");
-const campaignroutes = require("./routes/campaignroutes");
-
 // Load environment variables
 dotenv.config();
 
@@ -20,18 +16,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.use("/api/ngo", ngoroutes);
-app.use("/api/campaign", campaignroutes);
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/campaigns", require("./routes/campaignRoutes"));
 
-// Test Route
+// Home Route
 app.get("/", (req, res) => {
-    res.send("NGO Backend API is Running...");
+  res.send("NGO Backend API is Running...");
 });
 
 // Start Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

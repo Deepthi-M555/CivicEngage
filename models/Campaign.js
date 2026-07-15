@@ -10,7 +10,6 @@ const campaignSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      trim: true,
     },
     description: {
       type: String,
@@ -20,14 +19,9 @@ const campaignSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    raisedAmount: {
-      type: Number,
-      default: 0,
-    },
     location: {
       type: String,
       required: true,
-      trim: true,
     },
     startDate: {
       type: Date,
@@ -36,11 +30,6 @@ const campaignSchema = new mongoose.Schema(
     endDate: {
       type: Date,
       required: true,
-    },
-    status: {
-      type: String,
-      enum: ["Active", "Completed", "Cancelled"],
-      default: "Active",
     },
   },
   {

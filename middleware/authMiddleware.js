@@ -1,36 +1,43 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const authMiddleware = (req, res, next) => {
-    try {
+const protect = async (req, res, next) => {
+  try {
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
 
-        console.log("Authorization Header:", req.headers.authorization);
-        console.log("JWT Secret:", process.env.JWT_SECRET);
-
-        const token = req.headers.authorization?.split(" ")[1];
-
-        console.log("Extracted Token:", token);
-
-        if (!token) {
-            return res.status(401).json({
-                message: "No token provided"
-            });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        console.log("Decoded Token:", decoded);
-
-        req.ngo = decoded;
-
-        next();
-
-    } catch (error) {
-        console.log("JWT Error:", error.message);
-
-        return res.status(401).json({
-            message: "Invalid token"
-        });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
     }
+
+    // Extract token
+    const token = authHeader.split(" ")[1];
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user from decoded ID
+    req.user = await User.findById(decoded.id).select("-password");
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Continue to protected route
+    next();
+
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Not authorized, token failed",
+    });
+  }
 };
 
-module.exports = authMiddleware;
+module.exports = protect;
