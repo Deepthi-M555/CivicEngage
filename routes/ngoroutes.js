@@ -1,26 +1,13 @@
 const express = require("express");
-
 const router = express.Router();
-
-const {
-    signup,
-    login,
-    getDashboard
-} = require("../controllers/ngoController");
-
+const { registerNGO, loginNGO, getNGOProfile } = require("../controllers/ngoController");
 const authMiddleware = require("../middleware/authMiddleware");
 
+// Public Routes
+router.post("/signup", registerNGO);
+router.post("/login", loginNGO);
 
-// NGO Signup Route
-router.post("/signup", signup);
-
-
-// NGO Login Route
-router.post("/login", login);
-
-
-// NGO Dashboard Route
-router.get("/dashboard", authMiddleware, getDashboard);
-
+// Protected Route (Requires Authorization Header)
+router.get("/profile", authMiddleware, getNGOProfile);
 
 module.exports = router;

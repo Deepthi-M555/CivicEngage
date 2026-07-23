@@ -1,152 +1,109 @@
-const NGO = require("../models/NGO");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const NGO = require("../models/ngo");
 
-// NGO Signup
-const signup = async (req, res) => {
+// @desc    Register new NGO
+// @route   POST /api/ngo/signup
+const registerNGO = async (req, res) => {
     try {
+        const { name, email, password } = req.body;
 
-        const { ngoName, email, phone, address, password } = req.body;
-
-        if (!ngoName || !email || !phone || !address || !password) {
-            return res.status(400).json({
-                message: "Please fill all the fields"
-            });
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Please fill all the fields" });
         }
 
-        const existingNGO = await NGO.findOne({ email });
-
-        if (existingNGO) {
-            return res.status(400).json({
-                message: "NGO already registered"
-            });
+        const ngoExists = await NGO.findOne({ email });
+        if (ngoExists) {
+            return res.status(400).json({ message: "NGO with this email already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-        const ngo = new NGO({
-            ngoName,
+        const ngo = await NGO.create({
+            name,
             email,
-            phone,
-            address,
-            password: hashedPassword
+            password: hashedPassword,
         });
 
-        await ngo.save();
+        if (ngo) {
+            const token = jwt.sign(
+                { id: ngo._id },
+                process.env.JWT_SECRET || "mysecretkey123",
+                { expiresIn: "30d" }
+            );
 
-        return res.status(201).json({
-            success: true,
-            message: "NGO Registered Successfully"
-        });
-
+            return res.status(201).json({
+                message: "Registration successful",
+                ngo: {
+                    id: ngo._id,
+                    name: ngo.name,
+                    email: ngo.email,
+                },
+                token,
+            });
+        } else {
+            return res.status(400).json({ message: "Invalid NGO data" });
+        }
     } catch (error) {
-        console.log(error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+        return res.status(500).json({ message: error.message });
     }
 };
 
-
-// NGO Login
-const login = async (req, res) => {
+// @desc    Authenticate NGO / Login
+// @route   POST /api/ngo/login
+const loginNGO = async (req, res) => {
     try {
-
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({
-                message: "Please fill all the fields"
-            });
+            return res.status(400).json({ message: "Please fill all the fields" });
         }
-
 
         const ngo = await NGO.findOne({ email });
 
-        if (!ngo) {
-            return res.status(404).json({
-                message: "NGO not found"
+        if (ngo && (await bcrypt.compare(password, ngo.password))) {
+            const token = jwt.sign(
+                { id: ngo._id },
+                process.env.JWT_SECRET || "mysecretkey123",
+                { expiresIn: "30d" }
+            );
+
+            return res.status(200).json({
+                message: "Login successful",
+                ngo: {
+                    id: ngo._id,
+                    name: ngo.name,
+                    email: ngo.email,
+                },
+                token,
             });
+        } else {
+            return res.status(401).json({ message: "Invalid email or password" });
         }
-
-
-        const isMatch = await bcrypt.compare(password, ngo.password);
-
-        console.log("Entered Password:", password);
-console.log("Stored Hash:", ngo.password);
-console.log("Password Match:", isMatch);
-
-        if (!isMatch) {
-            return res.status(401).json({
-                message: "Invalid Password"
-            });
-        }
-
-
-        const token = jwt.sign(
-            { id: ngo._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "1d" }
-        );
-
-
-        return res.status(200).json({
-            success: true,
-            message: "Login Successful",
-            token
-        });
-
-
     } catch (error) {
-        console.log(error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+        return res.status(500).json({ message: error.message });
     }
 };
 
-
-// NGO Dashboard
-const getDashboard = async (req, res) => {
-
+// @desc    Get NGO Profile / Dashboard
+// @route   GET /api/ngo/profile
+// @access  Private
+const getNGOProfile = async (req, res) => {
     try {
-
-        const ngo = await NGO.findById(req.ngo.id)
-            .select("-password");
-
+        const ngo = await NGO.findById(req.ngo.id).select("-password");
 
         if (!ngo) {
-            return res.status(404).json({
-                message: "NGO not found"
-            });
+            return res.status(404).json({ message: "NGO profile not found" });
         }
 
-
         return res.status(200).json({
-            success: true,
-            dashboard: ngo
+            message: "Profile retrieved successfully",
+            ngo,
         });
-
-
     } catch (error) {
-
-        console.log(error);
-
-        return res.status(500).json({
-            message: "Server Error"
-        });
-
+        return res.status(500).json({ message: error.message });
     }
-
 };
 
-
-module.exports = {
-    signup,
-    login,
-    getDashboard
-};
+module.exports = { registerNGO, loginNGO, getNGOProfile };

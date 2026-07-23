@@ -2,9 +2,8 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
     try {
-
         console.log("Authorization Header:", req.headers.authorization);
-        console.log("JWT Secret:", process.env.JWT_SECRET);
+        console.log("JWT Secret:", process.env.JWT_SECRET || "mysecretkey123");
 
         const token = req.headers.authorization?.split(" ")[1];
 
@@ -16,7 +15,8 @@ const authMiddleware = (req, res, next) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Added || "mysecretkey123" fallback here:
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecretkey123");
 
         console.log("Decoded Token:", decoded);
 
