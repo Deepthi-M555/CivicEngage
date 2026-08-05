@@ -1,36 +1,50 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const authMiddleware = (req, res, next) => {
-    try {
-        console.log("Authorization Header:", req.headers.authorization);
-        console.log("JWT Secret:", process.env.JWT_SECRET || "mysecretkey123");
+const protect = async (req, res, next) => {
+  try {
+    let token;
 
-        const token = req.headers.authorization?.split(" ")[1];
-
-        console.log("Extracted Token:", token);
-
-        if (!token) {
-            return res.status(401).json({
-                message: "No token provided"
-            });
-        }
-
-        // Added || "mysecretkey123" fallback here:
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecretkey123");
-
-        console.log("Decoded Token:", decoded);
-
-        req.ngo = decoded;
-
-        next();
-
-    } catch (error) {
-        console.log("JWT Error:", error.message);
-
-        return res.status(401).json({
-            message: "Invalid token"
-        });
+    // 1️⃣ Check header exists
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "No authorization header" });
     }
+
+    // 2️⃣ Check Bearer format
+    if (!req.headers.authorization.startsWith("Bearer")) {
+      return res.status(401).json({ message: "Invalid token format" });
+    }
+
+    // 3️⃣ Extract token
+    token = req.headers.authorization.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Token missing" });
+    }
+
+    // 4️⃣ Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 5️⃣ Check user exists
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    // 6️⃣ Attach user
+    req.user = user;
+
+    next();
+
+  } catch (error) {
+    // 7️⃣ Handle errors
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+
+    return res.status(401).json({ message: "Not authorized" });
+  }
 };
 
-module.exports = authMiddleware;
+module.exports = protect;

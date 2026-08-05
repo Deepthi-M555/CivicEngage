@@ -13,11 +13,14 @@ const generateToken = (id) => {
 // ================= SIGN IN =================
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, dob, location, skills, interests } = req.body;
+    const { name, email, password, dob, location, skills, interests } =
+      req.body;
 
     // 1️⃣ Validation
     if (!email || !password || !name) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
 
     // 2️⃣ Check if user exists
@@ -51,12 +54,10 @@ exports.registerUser = async (req, res) => {
       },
       token: generateToken(user._id),
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // ================= LOGIN =================
 exports.loginUser = async (req, res) => {
@@ -88,7 +89,6 @@ exports.loginUser = async (req, res) => {
       },
       token: generateToken(user._id),
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -102,21 +102,20 @@ exports.getDashboard = async (req, res) => {
     const tasks = await Participation.find({ user: user._id });
 
     const total = tasks.length;
-    const completed = tasks.filter(t => t.status === "completed").length;
+    const completed = tasks.filter((t) => t.status === "completed").length;
 
     res.json({
       success: true,
       user: {
         name: user.name,
-        email: user.email
+        email: user.email,
       },
       stats: {
         totalTasks: total,
         completedTasks: completed,
-        impactScore: total * 10
-      }
+        impactScore: total * 10,
+      },
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -144,7 +143,6 @@ exports.updateProfile = async (req, res) => {
       message: "Profile updated",
       user: updatedUser,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -153,6 +151,7 @@ exports.updateProfile = async (req, res) => {
 // ================= CHANGE PASSWORD =================
 exports.changePassword = async (req, res) => {
   try {
+    console.log(req.body);
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user._id);
@@ -171,10 +170,10 @@ exports.changePassword = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Password updated successfully"
+      message: "Password updated successfully",
     });
-
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
