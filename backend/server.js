@@ -1,31 +1,74 @@
 const express = require("express");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
+const mongoose = require("mongoose");
 const cors = require("cors");
-const organizationProfileRoutes = require("./routes/organizationProfileRoutes");
-const volunteerRoutes = require("./routes/volunteerRoutes");
-
-dotenv.config(); // loads .env
-connectDB(); // connects DB
 
 const app = express();
 
-app.use(express.json()); // allows JSON data
-app.use(cors()); // allows frontend to connect
 
-// routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/events", require("./routes/eventRoutes"));
-app.use("/api/ai", require("./routes/aiRoutes"));
+// ======================================
+// MongoDB Connection
+// ======================================
 
-app.use("/api/notifications", require("./routes/notificationRoutes"));
-app.use("/api/messages", require("./routes/messageRoutes"));
-app.use("/api/settings", require("./routes/settingsRoutes"));
-app.use("/api/impact", require("./routes/impactRoutes"));
-app.use("/api/history", require("./routes/historyRoutes"));
-app.use("/api/organization", organizationProfileRoutes);
-app.use("/api/volunteers", volunteerRoutes);
+const MONGO_URI =
+    "mongodb://127.0.0.1:27017/ngo_database";
 
-app.listen(process.env.PORT, () => {
-  console.log("Server running...");
+console.log("Connecting directly to:", MONGO_URI);
+
+mongoose
+    .connect(MONGO_URI)
+    .then(() => {
+        console.log("✅ MongoDB Connected Successfully!");
+    })
+    .catch((error) => {
+        console.error("❌ DB Error:", error.message);
+    });
+
+
+// ======================================
+// Middlewares
+// ======================================
+
+app.use(cors());
+
+app.use(express.json());
+
+
+// ======================================
+// Routes
+// ======================================
+
+// NGO Routes
+app.use(
+    "/api/ngo",
+    require("./routes/ngoRoutes")
+);
+
+
+// Campaign Routes
+app.use(
+    "/api/campaigns",
+    require("./routes/campaignRoutes")
+);
+
+
+// ======================================
+// Home Route
+// ======================================
+
+app.get("/", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "NGO Backend API is running..."
+    });
+});
+
+
+// ======================================
+// Start Server
+// ======================================
+
+const PORT = 5000;
+
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });

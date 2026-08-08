@@ -1,50 +1,51 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const NGO = require("../models/NGO");
 
-const protect = async (req, res, next) => {
-  try {
-    let token;
+const protectNGO = async (req, res, next) => {
+    try {
+        let token;
 
-    // 1️⃣ Check header exists
-    if (!req.headers.authorization) {
-      return res.status(401).json({ message: "No authorization header" });
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith("Bearer")
+        ) {
+            token = req.headers.authorization.split(" ")[1];
+        }
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Access denied. No token provided."
+            });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET || "mysecretkey123"
+        );
+
+        const ngo = await NGO.findById(decoded.id).select("-password");
+
+        if (!ngo) {
+            return res.status(404).json({
+                success: false,
+                message: "NGO not found."
+            });
+        }
+
+        req.ngo = ngo;
+
+        next();
+
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: "Invalid or expired token."
+        });
     }
-
-    // 2️⃣ Check Bearer format
-    if (!req.headers.authorization.startsWith("Bearer")) {
-      return res.status(401).json({ message: "Invalid token format" });
-    }
-
-    // 3️⃣ Extract token
-    token = req.headers.authorization.split(" ")[1];
-
-    if (!token) {
-      return res.status(401).json({ message: "Token missing" });
-    }
-
-    // 4️⃣ Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // 5️⃣ Check user exists
-    const user = await User.findById(decoded.id).select("-password");
-
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-
-    // 6️⃣ Attach user
-    req.user = user;
-
-    next();
-
-  } catch (error) {
-    // 7️⃣ Handle errors
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-
-    return res.status(401).json({ message: "Not authorized" });
-  }
 };
 
-module.exports = protect;
+module.exports = {
+    protectNGO,
+    authMiddleware: protectNGO
+};

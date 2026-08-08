@@ -1,6 +1,5 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
-
 const {
   createCampaign,
   getAllCampaigns,
@@ -8,8 +7,7 @@ const {
   updateCampaign,
   deleteCampaign,
 } = require("../controllers/campaignController");
-
-const authMiddleware = require("../middleware/authMiddleware");
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 // Create Campaign
 router.post("/create", authMiddleware, createCampaign);
