@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Users, Building2, Landmark, Shield } from "lucide-react";
 const userDashboardUrl = import.meta.env.VITE_USER_DASHBOARD_URL;
+const ngoDashboardUrl = import.meta.env.VITE_NGO_DASHBOARD_URL;
 const roles = [
   {
     icon: Users,
@@ -15,7 +16,7 @@ const roles = [
     title: "NGO",
     description: "Create campaigns and engage volunteers for your cause",
     color: "bg-sky-800",
-    link: "/login",
+    link: ngoDashboardUrl,
   },
   {
     icon: Landmark,
