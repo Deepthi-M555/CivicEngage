@@ -13,6 +13,15 @@ import ImpactScore from "./pages/ImpactScore";
 import Badges from "./pages/Badges";
 import Opportunities from "./pages/Opportunities";
 import EventDetails from "./pages/EventDetails";
+import NGOLayout from "./layouts/NGOLayout";
+
+import NGOLogin from "./pages/ngo/Login";
+import NGOSignup from "./pages/ngo/Signup";
+import Overview from "./pages/ngo/Overview";
+import Campaigns from "./pages/ngo/Campaigns";
+import Volunteers from "./pages/ngo/Volunteers";
+import NGONotifications from "./pages/ngo/Notifications";
+import Organization from "./pages/ngo/Organization";
 
 function App() {
   return (
@@ -21,6 +30,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        
+        <Route path="/ngo/login" element={<NGOLogin />} />
+        <Route path="/ngo/signup" element={<NGOSignup />} />
         
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
@@ -32,6 +44,13 @@ function App() {
           <Route path="badges" element={<Badges />} />
           <Route path="opportunities" element={<Opportunities />} />
           <Route path="opportunities/:id" element={<EventDetails />} />
+        </Route>
+        <Route path="/ngo" element={<NGOLayout />}>
+          <Route index element={<Overview />} />
+          <Route path="campaigns" element={<Campaigns />} />
+          <Route path="volunteers" element={<Volunteers />} />
+          <Route path="notifications" element={<NGONotifications />} />
+          <Route path="organization" element={<Organization />} />
         </Route>
       </Routes>
     </>
